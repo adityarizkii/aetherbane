@@ -16,7 +16,7 @@ public class Main extends JFrame {
 
         // Tambahkan background ke layeredPanel
         BackgroundPanel backgroundPanel = new BackgroundPanel();
-        backgroundPanel.setBounds(0,0,1366, 700);
+        backgroundPanel.setBounds(0, 0, 1366, 700);
 
         layeredPane.add(backgroundPanel, JLayeredPane.DEFAULT_LAYER);
 
