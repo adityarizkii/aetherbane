@@ -19,3 +19,4 @@ public abstract class Character {
 
     public abstract void takeDamage(int damage);
 }
+
