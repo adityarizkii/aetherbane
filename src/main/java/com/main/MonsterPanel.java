@@ -1,9 +1,13 @@
 package com.main;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Rectangle;
 import java.util.Random;
 
-import javax.swing.*;
+import javax.swing.JLayeredPane;
+import javax.swing.JPanel;
 
 public class MonsterPanel extends JPanel implements Runnable {
     private SpriteAnimation monsterImage;
@@ -12,8 +16,7 @@ public class MonsterPanel extends JPanel implements Runnable {
     private int xPosition = 1100, yPosition = -10; // x y position img
     private Monster monster;
 
-    // atribut tambahan
-    // ...
+    private boolean isRunning = true;
 
     public Monster getMonster() {
         return monster;
@@ -47,13 +50,15 @@ public class MonsterPanel extends JPanel implements Runnable {
 
         if (random == 1) {
             // Tambahkan fireball ke layar
-            FirePanel firePanel = new FirePanel(xPosition, yPosition + 30, false, wizardPanel, wizardPanel.getWizard(),
-                    2);
+            FirePanel firePanel = new FirePanel(xPosition, yPosition + 30, false, wizardPanel, wizardPanel.getWizard(), this.getMonster(), 2);
             JLayeredPane layeredPane = (JLayeredPane) getParent();
             firePanel.setBounds(0, 300, 1366, 250); // Ukuran sesuai layar
             firePanel.setOpaque(false);
             layeredPane.add(firePanel, JLayeredPane.MODAL_LAYER);
             layeredPane.repaint();
+
+            SoundEffect.playSound("src/main/resources/attack.wav");
+
         }
     }
 
@@ -71,9 +76,10 @@ public class MonsterPanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (isRunning) {
+            // delay tembakan
             try {
-                Thread.sleep(2000);
+                Thread.sleep(800);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -92,5 +98,9 @@ public class MonsterPanel extends JPanel implements Runnable {
     public void play() {
         Thread thread = new Thread(this);
         thread.start();
+    }
+
+    public void stopThread() {
+        this.isRunning = false;
     }
 }

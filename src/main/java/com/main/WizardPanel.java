@@ -8,6 +8,7 @@ import java.awt.Window;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -20,6 +21,7 @@ public class WizardPanel extends JPanel implements Runnable {
     private int width, height; // w h img
     private int xPosition = 300, yPosition = -10; // x y position img
     private Wizard wizard;
+    private Main main;
 
     // atribut tambahan
     private int xInput = 0; // speed maju mundur yang di-input
@@ -27,6 +29,7 @@ public class WizardPanel extends JPanel implements Runnable {
     private int jumpVelocity; // Kecepatan saat melompat
     private int gravity = 2; // Gaya gravitasi
     private boolean isJumping = false; // Status lompat
+    private boolean running = true; // Flag untuk menentukan apakah thread harus berjalan
 
     public Wizard getWizard() {
         return wizard;
@@ -48,10 +51,11 @@ public class WizardPanel extends JPanel implements Runnable {
                 bounds.height - (2 * shrinkY));
     }
 
-    public WizardPanel(int width, int height, int maxHp) {
+    public WizardPanel(int width, int height, int maxHp, Main main) {
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);
         wizardImage = new SpriteAnimation("src/main/resources/idle.png", 1386 / 6, 190, 6, 400, 400);
+        this.main = main;
         this.width = width;
         this.height = height;
         this.wizard = new Wizard("Wizard", new HpBar(maxHp, Color.LIGHT_GRAY, Color.GREEN));
@@ -59,16 +63,30 @@ public class WizardPanel extends JPanel implements Runnable {
 
     public void showInputSpell() {
         Window parentWindow = SwingUtilities.getWindowAncestor(this); // Mengambil JFrame induk
-        String input = JOptionPane.showInputDialog(parentWindow, "cast your spell");
+        String input = JOptionPane.showInputDialog(parentWindow, "Cast your spell:");
+
         if (input != null && !input.trim().isEmpty()) {
-            // Tambahkan fireball ke layar
-            FirePanel firePanel = new FirePanel(xPosition + 64, yPosition, true, monsterPanel,
-                    monsterPanel.getMonster(), 2);
+            // Ambil teks dari spellLabel
             JLayeredPane layeredPane = (JLayeredPane) getParent();
-            firePanel.setBounds(0, 300, 1366, 250); // Ukuran sesuai layar
-            firePanel.setOpaque(false);
-            layeredPane.add(firePanel, JLayeredPane.MODAL_LAYER);
-            layeredPane.repaint();
+            JPanel spellPanel = (JPanel) layeredPane.getComponentsInLayer(JLayeredPane.PALETTE_LAYER)[2];
+            JLabel spellLabel = (JLabel) spellPanel.getComponent(0);
+            String currentSpellText = spellLabel.getText();
+
+            // Periksa apakah input cocok dengan currentSpell
+            if (input.equals(currentSpellText)) {
+                // Tambahkan fireball ke layar
+                FirePanel firePanel = new FirePanel(xPosition + 64, yPosition, true, monsterPanel,
+                        monsterPanel.getMonster(), this.getWizard(), 2);
+                firePanel.setBounds(0, 300, 1366, 250); // Ukuran sesuai layar
+                firePanel.setOpaque(false);
+                layeredPane.add(firePanel, JLayeredPane.MODAL_LAYER);
+                layeredPane.repaint();
+
+                SoundEffect.playSound("src/main/resources/attack.wav");
+
+                // Perbarui spell setelah input berhasil
+                main.updateSpell();
+            }
         }
     }
 
@@ -87,7 +105,7 @@ public class WizardPanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (running) { // Jalankan hanya jika 'running' bernilai true
             // Update posisi x manual melalui input a d
             if (!isJumping) {
                 xPosition += xInput;
@@ -115,6 +133,12 @@ public class WizardPanel extends JPanel implements Runnable {
                 }
             }
 
+            if (wizard.getCurrentHp() <= 0) {
+                isDead(getWizard().getScore());
+                stopThread(); // Menghentikan thread
+                break; // Keluar dari loop untuk menghentikan eksekusi
+            }
+
             // Repaint panel untuk memperbarui tampilan
             repaint();
 
@@ -129,6 +153,21 @@ public class WizardPanel extends JPanel implements Runnable {
 
     public void setupKeyboardControl() {
         addKeyListener(new KeyAdapter() {
+            private StringBuilder typedSpell = new StringBuilder();
+
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                typedSpell.append(c);
+
+                // Periksa apakah input pemain cocok dengan spell
+                if (typedSpell.toString().equals(main.getSpellLabel().getText())) {
+                    // Spell selesai diketik
+                    typedSpell.setLength(0); // Reset input pemain
+                    main.updateSpell(); // Perbarui spell
+                }
+            }
+
             @Override
             public void keyPressed(KeyEvent e) {
                 switch (e.getKeyCode()) {
@@ -167,6 +206,19 @@ public class WizardPanel extends JPanel implements Runnable {
         });
 
         new Thread(this).start();
+    }
+
+    public void isDead(int score) {
+        SwingUtilities.invokeLater(() -> {
+            JLayeredPane parent = (JLayeredPane) getParent();
+            Main mainFrame = (Main) SwingUtilities.getWindowAncestor(parent);
+
+            mainFrame.showGameOverPanel(score);
+        });
+    }
+
+    public void stopThread() {
+        running = false; // Ubah flag menjadi false untuk menghentikan loop
     }
 
 }
