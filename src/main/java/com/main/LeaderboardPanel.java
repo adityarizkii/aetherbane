@@ -1,11 +1,24 @@
 package com.main;
 
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-import java.awt.event.*;
-
-import java.awt.*;
 
 public class LeaderboardPanel extends JPanel {
     private JTable leaderboardTable;
@@ -21,21 +34,11 @@ public class LeaderboardPanel extends JPanel {
 
         // Buat tabel dengan data dummy
         String[] columnNames = { "Username", "Score" };
-        Object[][] data = {
-                { "Wizard Master", 1500 },
-                { "SpellCaster99", 1350 },
-                { "MagicWarrior", 1200 },
-                { "Enchanter", 1100 },
-                { "RuneMage", 950 },
-                { "ShadowWizard", 800 },
-                { "ElementalLord", 700 },
-                { "ArcaneHero", 600 },
-                { "MysticKnight", 500 },
-                { "WizardApprentice", 400 }
-        };
+        Object[][] data = LeaderboardDataFetcher.getLeaderboardData().toArray(new Object[0][]);
 
         // Urutkan data berdasarkan skor dari tertinggi ke terendah
-        java.util.Arrays.sort(data, (a, b) -> ((Integer) b[1]).compareTo((Integer) a[1]));
+        // java.util.Arrays.sort(data, (a, b) -> ((Integer) b[1]).compareTo((Integer)
+        // a[1]));
 
         DefaultTableModel model = new DefaultTableModel(data, columnNames) {
             @Override
@@ -134,4 +137,22 @@ public class LeaderboardPanel extends JPanel {
     public JButton getBackButton() {
         return (JButton) getComponents()[2];
     }
+
+    public void addScoreToLeaderboard(String username, int score) {
+        LeaderboardDataFetcher.saveLeaderboardData(username, score);
+    }
+
+    public int getLowerInLeaderboard() {
+        return LeaderboardDataFetcher.getTenthPlaceScore();
+    }
+
+    public void refreshLeaderboardData() {
+        Object[][] data = LeaderboardDataFetcher.getLeaderboardData().toArray(new Object[0][]);
+        DefaultTableModel model = (DefaultTableModel) leaderboardTable.getModel();
+        model.setRowCount(0); // Hapus semua data lama
+        for (Object[] row : data) {
+            model.addRow(row); // Tambahkan data baru
+        }
+    }
+
 }
