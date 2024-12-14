@@ -90,6 +90,25 @@ public class WizardPanel extends JPanel implements Runnable {
         }
     }
 
+    // public void showInputSpell() {
+    // Window parentWindow = SwingUtilities.getWindowAncestor(this); // Mengambil
+    // JFrame induk
+    // String input = JOptionPane.showInputDialog(parentWindow, "cast your spell");
+    // if (input != null && !input.trim().isEmpty()) {
+    // // Tambahkan fireball ke layar
+    // FirePanel firePanel = new FirePanel(xPosition + 64, yPosition, true,
+    // monsterPanel,
+    // monsterPanel.getMonster(), this.getWizard(), 2);
+    // JLayeredPane layeredPane = (JLayeredPane) getParent();
+    // firePanel.setBounds(0, 300, 1366, 250); // Ukuran sesuai layar
+    // firePanel.setOpaque(false);
+    // layeredPane.add(firePanel, JLayeredPane.MODAL_LAYER);
+    // layeredPane.repaint();
+
+    // SoundEffect.playSound("src/main/resources/attack.wav");
+    // }
+    // }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

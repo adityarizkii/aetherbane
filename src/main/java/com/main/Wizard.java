@@ -1,7 +1,7 @@
 package com.main;
 
 public class Wizard extends Character {
-    public Wizard(String name, HpBar hp){
+    public Wizard(String name, HpBar hp) {
         super(name, hp);
     }
 
@@ -9,5 +9,9 @@ public class Wizard extends Character {
     public void takeDamage(int damage) {
         System.out.println("wizard take damage");
         super.getHp().reduceHP(damage);
+    }
+
+    public int getCurrentHp() {
+        return super.getHp().getCurrentHP();
     }
 }

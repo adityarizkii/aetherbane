@@ -1,13 +1,8 @@
 package com.main;
 
-import java.awt.Container;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Rectangle;
+import java.awt.*;
 
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 public class FirePanel extends JPanel implements Runnable {
     private Image fireImage;
@@ -19,6 +14,7 @@ public class FirePanel extends JPanel implements Runnable {
     private boolean isExploding = false;
     private boolean isLeftToRight;
     private Character character;
+    private Character enemyCharacter;
     private int demage;
 
     public Rectangle getBounds() {
@@ -41,10 +37,11 @@ public class FirePanel extends JPanel implements Runnable {
         return fireBounds.intersects(enemyBounds);
     }
 
-    public FirePanel(int startX, int startY, boolean isLeftToRight, JPanel enemyPanel, Character character, int demage) {
+    public FirePanel(int startX, int startY, boolean isLeftToRight, JPanel enemyPanel, Character enemyCharacter, Character character, int demage) {
         this.isLeftToRight = isLeftToRight;
         this.character = character;
         this.demage = demage;
+        this.enemyCharacter = enemyCharacter;
 
         ImageIcon fireIcon = new ImageIcon("src/main/resources/fire.png");
         fireImage = fireIcon.getImage();
@@ -90,7 +87,10 @@ public class FirePanel extends JPanel implements Runnable {
                 if (checkCollision()) {
                     isExploding = true; // Trigger explosion state
 
-                    character.takeDamage(demage);
+                    enemyCharacter.takeDamage(demage);
+                    character.setScore(character.getScore() + 2);
+
+                    // System.out.println(character.getScore());
 
                     repaint();
 
