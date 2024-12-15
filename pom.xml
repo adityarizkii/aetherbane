@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.main</groupId>
-    <artifactId>aetherbane</artifactId>
+    <artifactId>aetherbanev1</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -13,4 +13,11 @@
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>8.0.33</version>
+        </dependency>
+    </dependencies>
 </project>

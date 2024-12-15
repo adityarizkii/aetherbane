@@ -1,11 +1,8 @@
 package com.main;
 
-import java.awt.Graphics;
-import java.awt.Image;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
-
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
 
 class SpriteAnimation extends JPanel implements Runnable {
     private final ImageIcon spriteSheet; // Sprite sheet menggunakan ImageIcon

@@ -13,7 +13,7 @@ public class BackgroundPanel extends JPanel implements Runnable {
 
     public BackgroundPanel() {
         // Load gambar menggunakan ImageIcon
-        ImageIcon icon = new ImageIcon("src/main/resources/background.png");
+        ImageIcon icon = new ImageIcon("src/main/resources/bg-loop.png");
         backgroundImage = icon.getImage();
 
         // Mulai thread untuk animasi
